@@ -28,9 +28,9 @@ const app = graph.compile({ checkpointer: memory });
 
 export async function handleChat(req, res) {
   try {
-    const { message, thread_id } = req.body;
+    const { cleanedText, thread_id } = req.body;
 
-    if (!message || typeof message !== "string") {
+    if (!cleanedText || typeof cleanedText !== "string") {
       return res.status(400).json({ error: "Missing or invalid message." });
     }
 
@@ -44,7 +44,7 @@ export async function handleChat(req, res) {
       messages: [
         {
           role: "user",
-          content: message,
+          content: cleanedText,
         },
       ],
     };
@@ -55,7 +55,10 @@ export async function handleChat(req, res) {
     return res.json({
       response: last.content,
       thread_id: config.configurable.thread_id,
+      log: req.body.sanitizationLog,
+      cleanedText: cleanedText
     });
+    
   } catch (err) {
     console.error("ChatController Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
