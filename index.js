@@ -14,7 +14,7 @@ connectDB()
 app.use(cors());
 app.use(express.json());
 
-app.use("/chat", chatRoutes);
+app.use("/chat", sanitizeMiddleware, injecttionDetection, chatRoutes);
 
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
