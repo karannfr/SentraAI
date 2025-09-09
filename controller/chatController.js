@@ -13,6 +13,7 @@ const llm = new Ollama({
   baseUrl: "http://localhost:11434",
 });
 
+
 const callModel = async (state) => {
   const response = await llm.invoke(state.messages);
   return { messages: [response] };
@@ -28,9 +29,11 @@ const app = graph.compile({ checkpointer: memory });
 
 export async function handleChat(req, res) {
   try {
-    const { cleanedText, thread_id } = req.body;
+    const { message, cleanedText, thread_id, sanitizationLog } = req.body;
 
-    if (!cleanedText || typeof cleanedText !== "string") {
+    const inputText = typeof cleanedText === "string" ? cleanedText : message;
+
+    if (!inputText || typeof inputText !== "string") {
       return res.status(400).json({ error: "Missing or invalid message." });
     }
 
@@ -44,7 +47,7 @@ export async function handleChat(req, res) {
       messages: [
         {
           role: "user",
-          content: cleanedText,
+          content: inputText,
         },
       ],
     };
@@ -52,13 +55,18 @@ export async function handleChat(req, res) {
     const output = await app.invoke(input, config);
     const last = output.messages[output.messages.length - 1];
 
-    return res.json({
+    const responsePayload = {
       response: last.content,
       thread_id: config.configurable.thread_id,
-      log: req.body.sanitizationLog,
-      cleanedText: cleanedText
-    });
-    
+    };
+
+    if (typeof cleanedText === "string") {
+      responsePayload.cleanedText = cleanedText;
+      responsePayload.log = sanitizationLog || null;
+    }
+
+    return res.json(responsePayload);
+
   } catch (err) {
     console.error("ChatController Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
