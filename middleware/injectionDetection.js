@@ -37,9 +37,9 @@ export async function injecttionDetection(req, res, next) {
         next();
 
     } catch (error) {
-        console.error('Sanitization error:', error);
+        console.error('Injection Detection error:', error);
         return res.status(500).json({
-            error: 'Internal Server Error during sanitization.'
+            error: 'Internal Server Error during injection detection.'
         });
     }
 }
