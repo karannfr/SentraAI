@@ -15,7 +15,11 @@ const obsfucatedSchema = new Schema({
     sanitizedAndDeobfuscated: { type: Boolean, required: true },
   },
   thread_id: { type: String, required: false },
-});
+},
+{
+  timestamps: true,
+}
+);
 
 const Obsfucated = mongoose.model("Obsfucated", obsfucatedSchema);
 export default Obsfucated;

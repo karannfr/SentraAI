@@ -15,7 +15,11 @@ const injectedDataSchema = new Schema({
     sanitizedAndDeobfuscated: { type: Boolean, required: true },
   },
   thread_id: { type: String, required: false },
-});
+},
+{
+  timestamps: true,
+}
+);
 
 const InjectedData = mongoose.model("InjectedData", injectedDataSchema);
 export default InjectedData;
