@@ -21,6 +21,7 @@ export async function injecttionDetection(req, res, next) {
 
         if (result === "malicious") {
             await InjectedData.create({
+                ipAddress: req.body.clientIp,
                 rawMessage: req.body.message,
                 cleanedMessage: req.body.cleanedText,
                 sanitizationLog: req.body.sanitizationLog,

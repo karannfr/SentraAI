@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const injectedDataSchema = new Schema({
+  ipAddress: { type: String, required: true },
   rawMessage: { type: String, required: true },
   cleanedMessage: { type: String, required: true },
   sanitizationLog: {

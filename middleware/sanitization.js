@@ -36,6 +36,7 @@ const HOMOGLYPH_MAP = {
  * @param {string} str The string to un-escape.
  * @returns {string} The un-escaped string.
  */
+
 function unescapeUnicode(str) {
     return str.replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
         return String.fromCharCode(parseInt(grp, 16));
@@ -207,12 +208,15 @@ export async function sanitizeMiddleware(req, res, next) {
             });
         }
 
+
+        req.body.clientIp = req.ip || req.headers["x-forwarded-for"] || "unknown";
         const result = sanitizeAndDeobfuscate(message);
         req.body.cleanedText = result.cleaned;
         req.body.sanitizationLog = result.log;
 
         if (result.log.sanitizedAndDeobfuscated) {
             await Obsfucated.create({
+                ipAddress: req.body.clientIp,
                 rawMessage: message,
                 cleanedMessage: result.cleaned,
                 sanitizationLog: result.log,
